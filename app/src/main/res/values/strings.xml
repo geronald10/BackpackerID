@@ -22,7 +22,7 @@
     <string name="title_activity_fullscreen_budget">FullscreenBudgetActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-    
+
     <string name="hint_sign_in">Sign in</string>
     <string name="label_btn_register_here"><![CDATA[>> Register here <<]]></string>
     <string name="label_btn_logout">Logout</string>

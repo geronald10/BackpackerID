@@ -40,7 +40,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         // Initialize Mesosfer Project
-        Mesosfer.initialize(this, "V3B6udvrwj", "ItzvGjzbQGq0TOx0VgNshLlLcve4Wa09");
+//        Mesosfer.initialize(this, "V3B6udvrwj", "ItzvGjzbQGq0TOx0VgNshLlLcve4Wa09");
 
         // initialize input form view
         textEmail = (TextInputEditText) findViewById(R.id.text_email);

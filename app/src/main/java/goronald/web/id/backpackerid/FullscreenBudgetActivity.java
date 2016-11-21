@@ -7,11 +7,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -91,6 +94,7 @@ public class FullscreenBudgetActivity extends AppCompatActivity {
     };
 
     private ValueAnimator mAnimator;
+    private EditText mBudget;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,8 +103,24 @@ public class FullscreenBudgetActivity extends AppCompatActivity {
         setContentView(R.layout.activity_fullscreen_budget);
 
         mVisible = true;
+
+        mBudget = (EditText) findViewById(R.id.etBudget);
         mControlsView = findViewById(R.id.fullscreen_content_controls);
-        mContentView = findViewById(R.id.fullscreen_content);
+//        mContentView = findViewById(R.id.fullscreen_content);
+
+        mBudget.setOnEditorActionListener(new EditText.OnEditorActionListener(){
+
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (keyEvent.getAction() == keyEvent.ACTION_DOWN && keyEvent.getAction() == keyEvent.KEYCODE_ENTER){
+                    if (!keyEvent.isShiftPressed()){
+                        expand();
+                    }
+                }
+                return false;
+            }
+        });
+
         mContainerExtend = (LinearLayout) findViewById(R.id.fullscreen_container_extended);
         mContainerExtend.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
@@ -118,18 +138,19 @@ public class FullscreenBudgetActivity extends AppCompatActivity {
 
 
 
+
         // Set up the user interaction to manually show or hide the system UI.
-        mContentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggle();
-            }
-        });
+//        mContentView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                toggle();
+//            }
+//        });
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+//        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
     }
 
     private void expand(){
