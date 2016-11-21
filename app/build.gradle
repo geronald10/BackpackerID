@@ -19,7 +19,7 @@ android {
     }
 }
 
-repositories{
+repositories {
     flatDir {
         dirs 'libs'
     }
@@ -34,5 +34,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.0.1'
     compile 'com.android.support:design:25.0.1'
     compile 'com.eyro.mesosfer:MesosferSDK-Android:0.1.0@aar'
+    compile 'com.android.support:support-v4:25.0.1'
     testCompile 'junit:junit:4.12'
 }

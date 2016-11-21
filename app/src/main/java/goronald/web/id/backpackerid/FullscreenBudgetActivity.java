@@ -1,5 +1,7 @@
 package goronald.web.id.backpackerid;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +9,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -62,6 +67,8 @@ public class FullscreenBudgetActivity extends AppCompatActivity {
         }
     };
     private boolean mVisible;
+    private LinearLayout mContainerExtend;
+
     private final Runnable mHideRunnable = new Runnable() {
         @Override
         public void run() {
@@ -83,6 +90,8 @@ public class FullscreenBudgetActivity extends AppCompatActivity {
         }
     };
 
+    private ValueAnimator mAnimator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +101,21 @@ public class FullscreenBudgetActivity extends AppCompatActivity {
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
+        mContainerExtend = (LinearLayout) findViewById(R.id.fullscreen_container_extended);
+        mContainerExtend.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                mContainerExtend.getViewTreeObserver().removeOnPreDrawListener(this);
+                mContainerExtend.setVisibility(View.GONE);
+
+                final int witdthSpec = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
+                final int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+                mContainerExtend.measure(witdthSpec,heightSpec);
+                mAnimator = slideAnimator(0,mContainerExtend.getMeasuredHeight());
+                return false;
+            }
+        });
+
 
 
         // Set up the user interaction to manually show or hide the system UI.
@@ -108,6 +132,56 @@ public class FullscreenBudgetActivity extends AppCompatActivity {
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
     }
 
+    private void expand(){
+        mContainerExtend.setVisibility(View.VISIBLE);
+        mControlsView.setVisibility(View.GONE);
+
+        mAnimator.start();
+    }
+
+    private void collapse(){
+        int finalHeight = mContainerExtend.getHeight();
+        ValueAnimator mAnimator = slideAnimator(finalHeight,0);
+        mAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+                mContainerExtend.setVisibility(View.GONE);
+                mControlsView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+
+            }
+        });
+        mAnimator.start();
+    }
+
+    private ValueAnimator slideAnimator(int start, int end){
+        ValueAnimator animator = ValueAnimator.ofInt(start, end);
+
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                int value =(Integer) valueAnimator.getAnimatedValue();
+                ViewGroup.LayoutParams layoutParams = mContainerExtend.getLayoutParams();
+                layoutParams.height = value;
+                mContainerExtend.setLayoutParams(layoutParams);
+            }
+        });
+
+        return animator;
+    }
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
