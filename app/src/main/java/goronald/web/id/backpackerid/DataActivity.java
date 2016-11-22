@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -13,6 +14,7 @@ import com.eyro.mesosfer.MesosferException;
 import com.eyro.mesosfer.MesosferQuery;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,7 +87,12 @@ public class DataActivity extends AppCompatActivity {
                     Map<String, String> map = new HashMap<>();
                     map.put("id", "ID : " + data.getObjectId());
                     try {
-                        map.put("data", data.toJSON().toString(4));
+//                        Log.d("Nama Kota",data.getDataObject("namaKota").toString());
+                        map.put("data", data.toJSON().toString(1));
+                        JSONObject dataJson = new JSONObject(data.toJSON().toString());
+                        String namaKota = dataJson.getString("namaKota");
+                        Log.d("Nama Kota",namaKota);
+
                     } catch (JSONException e1) {
                         map.put("data", data.toJSON().toString());
                     }
