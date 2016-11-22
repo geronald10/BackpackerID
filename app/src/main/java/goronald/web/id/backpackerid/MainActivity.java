@@ -30,12 +30,24 @@ public class MainActivity extends AppCompatActivity {
         loading.setCanceledOnTouchOutside(false);
 
         Button btnLogOut = (Button)findViewById(R.id.btn_log_out);
+        Button btnShowData = (Button)findViewById(R.id.btn_show_data);
         btnLogOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogOut();
             }
         });
+        btnShowData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                handleData();
+            }
+        });
+    }
+
+    public void handleData() {
+        Intent intent = new Intent(this, DataActivity.class);
+        startActivity(intent);
     }
 
     public void attemptLogOut() {
@@ -63,5 +75,19 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        // dismiss any resource showing
+        if (loading != null && loading.isShowing()) {
+            loading.dismiss();
+        }
+
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
+        }
+
+        super.onDestroy();
     }
 }

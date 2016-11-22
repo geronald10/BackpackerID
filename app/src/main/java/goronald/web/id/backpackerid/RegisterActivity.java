@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.eyro.mesosfer.Mesosfer;
 import com.eyro.mesosfer.MesosferException;
 import com.eyro.mesosfer.MesosferUser;
 import com.eyro.mesosfer.RegisterCallback;
@@ -38,9 +37,6 @@ public class RegisterActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("Create BackpackerID Account");
         }
-
-        // Initialize Mesosfer Project
-        Mesosfer.initialize(this, "V3B6udvrwj", "ItzvGjzbQGq0TOx0VgNshLlLcve4Wa09");
 
         // initialize input form view
         textEmail = (TextInputEditText) findViewById(R.id.text_email);
@@ -162,5 +158,19 @@ public class RegisterActivity extends AppCompatActivity {
                 dialog = builder.show();
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        // dismiss any resource showing
+        if (loading != null && loading.isShowing()) {
+            loading.dismiss();
+        }
+
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
+        }
+
+        super.onDestroy();
     }
 }

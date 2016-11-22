@@ -17,11 +17,21 @@
         android:text="Ini halaman setelah login" />
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/btn_log_out"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:background="@color/colorPrimary"
         android:text="@string/label_btn_logout"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:id="@+id/btn_show_data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@color/colorPrimary"
+        android:text="Data"
         android:textColor="@android:color/white" />
 
 </LinearLayout>

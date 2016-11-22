@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "704938097930",
+    "project_id": "firebase-backpackerid"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:704938097930:android:fd5f4d0fe2f74ccd",
+        "android_client_info": {
+          "package_name": "goronald.web.id.backpackerid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "704938097930-vbpjtveagt32fn3e18h9jj6sa7aeacve.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "goronald.web.id.backpackerid",
+            "certificate_hash": "12B89C6CDA5AE9392125FCAAF135E68C0A386F9D"
+          }
+        },
+        {
+          "client_id": "704938097930-neea5gl7dim781j13pd37ighn0jeto84.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYinnr_lqEF0B2srcmph4udcXkW5ujzqo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

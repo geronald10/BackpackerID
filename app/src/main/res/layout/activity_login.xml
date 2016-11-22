@@ -70,7 +70,30 @@
                 android:layout_height="wrap_content"
                 android:background="@color/colorPrimary"
                 android:text="@string/label_btn_register_here"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_marginTop="16dp"
+                android:background="@android:color/darker_gray"
+                android:layout_height="1dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:text="Or Sign In with"
+                android:textStyle="bold"
+                android:textColor="@android:color/darker_gray"
+                android:id="@+id/textView" />
+
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/sign_in_google_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
     </ScrollView>
