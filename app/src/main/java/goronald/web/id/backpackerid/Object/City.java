@@ -7,9 +7,17 @@ package goronald.web.id.backpackerid.Object;
 public class City {
     private String cityName,cityDescription, cityBudget, cityLat,cityLong, cityPhoto;
 
+    public City() {
 
-    public City(){
+    }
 
+    public City(String cityName, String cityDescription, String cityBudget, String cityLat, String cityLong, String cityPhoto) {
+        this.cityName = cityName;
+        this.cityDescription = cityDescription;
+        this.cityBudget = cityBudget;
+        this.cityLat = cityLat;
+        this.cityLong = cityLong;
+        this.cityPhoto = cityPhoto;
     }
 
     public String getCityDescription() {

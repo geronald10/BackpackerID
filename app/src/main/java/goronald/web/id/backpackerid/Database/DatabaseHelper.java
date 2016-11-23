@@ -1,5 +1,8 @@
 package goronald.web.id.backpackerid.Database;
 
+import android.app.ProgressDialog;
+import android.util.Log;
+
 import com.eyro.mesosfer.FindCallback;
 import com.eyro.mesosfer.MesosferData;
 import com.eyro.mesosfer.MesosferException;
@@ -28,20 +31,23 @@ public class DatabaseHelper {
     private static final int[] to = new int[] { android.R.id.text1, android.R.id.text2 };
     private static final String[] from = new String[] { "id", "data" };
 
+    public DatabaseHelper (){
 
-    public List<City> getDataKota(MesosferQuery<MesosferData> query){
+    }
+
+    public List<City> getDataKota(MesosferQuery<MesosferData> query, final ProgressDialog loading){
 
 //        MesosferQuery<MesosferData> query = MesosferData.getQuery("Kota");
 
         // showing a progress dialog loading
-//        loading.setMessage("Querying kota...");
-//        loading.show();
+        loading.setMessage("Querying kota...");
+        loading.show();
 
         query.findAsync(new FindCallback<MesosferData>() {
             @Override
             public void done(List<MesosferData> list, MesosferException e) {
                 // hide progress dialog loading
-//                loading.dismiss();
+                loading.dismiss();
 
                 // check if there is an exception happen
                 if (e != null) {
@@ -67,7 +73,7 @@ public class DatabaseHelper {
                     Map<String, String> map = new HashMap<>();
                     map.put("id", "ID : " + data.getObjectId());
                     try {
-//                        Log.d("Nama Kota",data.getDataObject("namaKota").toString());
+                        Log.d("Nama Kota",data.getDataObject("namaKota").toString());
                         map.put("data", data.toJSON().toString(1));
                         JSONObject dataJson = new JSONObject(data.toJSON().toString());
 //                        String namaKota = dataJson.getString("namaKota");
@@ -149,8 +155,7 @@ public class DatabaseHelper {
                         map.put("data", data.toJSON().toString());
                     }
                     mapDataList.add(map);
-
-                        mapObject.add(myObject);
+                    mapObject.add(myObject);
                 }
             }
         });
