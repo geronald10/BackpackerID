@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -22,6 +23,7 @@ import com.eyro.mesosfer.FindCallback;
 import com.eyro.mesosfer.MesosferData;
 import com.eyro.mesosfer.MesosferException;
 import com.eyro.mesosfer.MesosferQuery;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -194,15 +196,21 @@ public class ItemListActivity extends AppCompatActivity {
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
 //            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).getCityName());
-            Log.d("Ini item",mValues.get(position).getCityName());
+            holder.mContentTextNamaKota.setText(mValues.get(position).getCityName());
+            Picasso.with(getApplicationContext())
+                    .load(mValues.get(position).getCityPhoto())
+                    .resize(125,90)
+                    .centerCrop()
+                    .into(holder.mContentImageKota);
+            holder.mContentTextBudget.setText("Budget: Rp. " + (mValues.get(position).getCityBudget()));
+//            Log.d("Ini item",mValues.get(position).getCityName());
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putString(ItemDetailFragment.ARG_ITEM_ID, holder.mContentView.toString());
+                        arguments.putString(ItemDetailFragment.ARG_ITEM_ID, holder.mContentTextNamaKota.toString());
                         ItemDetailFragment fragment = new ItemDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -211,7 +219,7 @@ public class ItemListActivity extends AppCompatActivity {
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ItemDetailActivity.class);
-                        intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, holder.mContentView.getText());
+                        intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, holder.mContentTextNamaKota.getText());
 
                         context.startActivity(intent);
                     }
@@ -227,19 +235,18 @@ public class ItemListActivity extends AppCompatActivity {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
             public final TextView mIdView;
-            public final TextView mContentView;
+            public final TextView mContentTextNamaKota;
+            public final ImageView mContentImageKota;
+            public final TextView mContentTextBudget;
             public City mItem;
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
                 mIdView = (TextView) view.findViewById(R.id.id);
-                mContentView = (TextView) view.findViewById(R.id.content);
-            }
-
-            @Override
-            public String toString() {
-                return super.toString() + " '" + mContentView.getText() + "'";
+                mContentTextNamaKota = (TextView) view.findViewById(R.id.contentTextNamaKota);
+                mContentImageKota = (ImageView) view.findViewById(R.id.contentImageKota);
+                mContentTextBudget = (TextView) view.findViewById(R.id.contentTextBudget);
             }
         }
     }

@@ -2,15 +2,13 @@ package goronald.web.id.backpackerid;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.eyro.mesosfer.FindCallback;
 import com.eyro.mesosfer.MesosferData;
@@ -23,12 +21,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
-import goronald.web.id.backpackerid.Object.City;
 import goronald.web.id.backpackerid.Object.VisitObject;
-import goronald.web.id.backpackerid.dummy.DummyContent;
 
 /**
  * A fragment representing a single Item detail screen.
@@ -152,7 +147,7 @@ public class ItemDetailFragment extends Fragment {
                     mObject.add(myObject);
                     Log.d("mObject Size", String.valueOf(mObject.size()));
                 }
-                mAdapter.notifyDataSetChanged();
+//                mAdapter.notifyDataSetChanged();
             }
         });
     }

@@ -17,8 +17,7 @@
     
     -->
 
-    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/item_list"
         android:name="goronald.web.id.backpackerid.ItemListFragment"
         android:layout_width="@dimen/item_width"
