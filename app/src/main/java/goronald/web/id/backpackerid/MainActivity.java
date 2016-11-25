@@ -3,8 +3,14 @@ package goronald.web.id.backpackerid;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
@@ -23,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initalizeScreen();
 
         loading = new ProgressDialog(this);
         loading.setIndeterminate(true);
@@ -43,6 +51,21 @@ public class MainActivity extends AppCompatActivity {
                 handleData();
             }
         });
+
+    }
+
+    private void initalizeScreen() {
+        ViewPager viewPager = (ViewPager)findViewById(R.id.pager);
+        TabLayout tabLayout = (TabLayout)findViewById(R.id.tab_layout);
+        Toolbar toolbar = (Toolbar)findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+
+        // Create SectionPagerAdapter
+        SectionPagerAdapter adapter = new SectionPagerAdapter(getSupportFragmentManager());
+        viewPager.setOffscreenPageLimit(2);
+        viewPager.setAdapter(adapter);
+
+        tabLayout.setupWithViewPager(viewPager);
     }
 
     public void handleData() {
@@ -89,5 +112,47 @@ public class MainActivity extends AppCompatActivity {
         }
 
         super.onDestroy();
+    }
+
+    public class SectionPagerAdapter extends FragmentStatePagerAdapter {
+
+        public SectionPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+
+            Fragment fragment = null;
+            // Set fragment to different fragments depending on position in ViewPager
+            switch (position) {
+                case 0:
+                    fragment = HomeFragment.newInstance();
+                    break;
+                case 1:
+                    fragment = PlacesFragment.newInstance();
+                    break;
+                default:
+                    fragment = HomeFragment.newInstance();
+                    break;
+            }
+            return fragment;
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return getString(R.string.pager_title_home);
+                case 1:
+                default:
+                    return getString(R.string.pager_title_places);
+            }
+        }
     }
 }

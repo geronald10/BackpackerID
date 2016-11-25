@@ -94,7 +94,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
     }
 
-
     View.OnClickListener operation = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -146,7 +145,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 }
 
                 Toast.makeText(LoginActivity.this, "User logged in...", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(LoginActivity.this, BudgetActivity.class);
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
             }
