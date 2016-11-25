@@ -10,7 +10,8 @@
     android:layout_marginBottom="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
-    tools:listitem="@layout/item_visit_list_content">
+    tools:listitem="@layout/item_visit_list_content"
+    android:id="@+id/rvObjects">
 
 
 </android.support.v7.widget.RecyclerView>

@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import goronald.web.id.backpackerid.Adapter.CustomVisitAdapter;
 import goronald.web.id.backpackerid.Object.VisitObject;
 
 /**
@@ -44,7 +46,7 @@ public class ItemDetailFragment extends Fragment {
     private String mItem;
     private ProgressDialog loading;
     private List<VisitObject> mObject;
-
+    private CustomVisitAdapter objAdapter;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -78,6 +80,9 @@ public class ItemDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.item_detail, container, false);
 
+        View recyclerViewObject = rootView.findViewById(R.id.rvObjects);
+        assert recyclerViewObject != null;
+//        setupRecyclerView
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
 //            ((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem);
@@ -86,11 +91,17 @@ public class ItemDetailFragment extends Fragment {
         loading.setIndeterminate(true);
         loading.setCancelable(false);
         loading.setCanceledOnTouchOutside(false);
+        objAdapter = new CustomVisitAdapter(mObject);
+        updateAndShowDataList();
+
+        ((RecyclerView) recyclerViewObject).setAdapter(objAdapter);
+
 
         return rootView;
     }
 
     private void updateAndShowDataList() {
+//        Still Error Need the parameter
         MesosferQuery<MesosferData> query = MesosferData.getQuery("Kota");
 
         // showing a progress dialog loading
@@ -147,7 +158,7 @@ public class ItemDetailFragment extends Fragment {
                     mObject.add(myObject);
                     Log.d("mObject Size", String.valueOf(mObject.size()));
                 }
-//                mAdapter.notifyDataSetChanged();
+                objAdapter.notifyDataSetChanged();
             }
         });
     }
