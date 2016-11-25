@@ -21,7 +21,8 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:id="@+id/ivPlace"
-                    android:layout_height="400dp" />
+                    android:scaleType="centerCrop"
+                    android:layout_height="200dp" />
 
                 <TextView
                     android:text="TextView"

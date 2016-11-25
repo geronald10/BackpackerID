@@ -6,7 +6,7 @@ package goronald.web.id.backpackerid.Object;
 
 public class VisitObject {
 
-    private String objPhoto, objPrice, objLat,objLong, objName;
+    private String objPhoto, objPrice, objLat,objLong, objName, objOrigin;
 
     public VisitObject(){
 
@@ -50,5 +50,13 @@ public class VisitObject {
 
     public void setObjName(String objName) {
         this.objName = objName;
+    }
+
+    public String getObjOrigin() {
+        return objOrigin;
+    }
+
+    public void setObjOrigin(String objOrigin) {
+        this.objOrigin = objOrigin;
     }
 }

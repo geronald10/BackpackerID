@@ -92,7 +92,10 @@ public class ItemDetailFragment extends Fragment {
         loading.setCancelable(false);
         loading.setCanceledOnTouchOutside(false);
         objAdapter = new CustomVisitAdapter(mObject);
-        updateAndShowDataList();
+        Log.d("nama kota visit",mItem);
+        updateAndShowDataList(mItem);
+//        Log.d()
+
 
         ((RecyclerView) recyclerViewObject).setAdapter(objAdapter);
 
@@ -100,16 +103,19 @@ public class ItemDetailFragment extends Fragment {
         return rootView;
     }
 
-    private void updateAndShowDataList() {
+    private void updateAndShowDataList(final String key) {
 //        Still Error Need the parameter
-        MesosferQuery<MesosferData> query = MesosferData.getQuery("Kota");
+        MesosferQuery<MesosferData> query = MesosferData.getQuery("WorthVisit");
 
         // showing a progress dialog loading
-        loading.setMessage("Querying kota...");
+        loading.setMessage("Querying Tempat Wisata...");
         loading.show();
 
         query.findAsync(new FindCallback<MesosferData>() {
             @Override
+
+
+
             public void done(List<MesosferData> list, MesosferException e) {
                 // hide progress dialog loading
                 loading.dismiss();
@@ -139,14 +145,14 @@ public class ItemDetailFragment extends Fragment {
                     try {
                         map.put("data", data.toJSON().toString(1));
                         JSONObject dataJson = new JSONObject(data.toJSON().toString());
-                        String namaKota = dataJson.getString("namaKota");
-                        Log.d("Nama Kota",dataJson.getString("namaKota"));
-
-                        myObject.setObjName(dataJson.getString(""));
-                        myObject.setObjPrice(dataJson.getString(""));
-                        myObject.setObjPhoto(dataJson.getString(""));
-                        myObject.setObjLat(dataJson.getString(""));
-                        myObject.setObjLong(dataJson.getString(""));
+//                        String namaKota = dataJson.getString("namaKota");
+                        Log.d("Object",dataJson.getString("namaKota"));
+                        myObject.setObjOrigin(dataJson.getString("namaKota"));
+                        myObject.setObjName(dataJson.getString("worthName"));
+                        myObject.setObjPrice(dataJson.getString("worthPrice"));
+                        myObject.setObjPhoto(dataJson.getString("imageWorth"));
+                        myObject.setObjLat(dataJson.getString("worthLat"));
+                        myObject.setObjLong(dataJson.getString("worthLng"));
 
 //                        Log.d("Nama Kota",namaKota);
 
@@ -155,7 +161,11 @@ public class ItemDetailFragment extends Fragment {
                     }
 //                    mapDataList.add(map);
 //                    Log.d("City Budget",myCity.getCityBudget());
-                    mObject.add(myObject);
+                    if (myObject.getObjOrigin().equals(key)){
+                        Log.d("masuk", "iya");
+
+                        mObject.add(myObject);
+                    }
                     Log.d("mObject Size", String.valueOf(mObject.size()));
                 }
                 objAdapter.notifyDataSetChanged();
