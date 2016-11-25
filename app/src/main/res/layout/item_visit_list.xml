@@ -13,5 +13,4 @@
     tools:listitem="@layout/item_visit_list_content"
     android:id="@+id/rvObjects">
 
-
 </android.support.v7.widget.RecyclerView>

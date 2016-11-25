@@ -110,6 +110,7 @@ public class HomeFragment extends Fragment {
             }
         }
     };
+
     private void goingIntent(Class x){
         Intent intent = new Intent(getContext(),x);
         startActivity(intent);
