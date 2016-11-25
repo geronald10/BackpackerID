@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -60,6 +61,8 @@ public class ItemListActivity extends AppCompatActivity {
     private ProgressDialog loading;
     private SimpleItemRecyclerViewAdapter mAdapter;
     private TextView emptyText;
+    private FrameLayout frameLayout;
+    private View recyclerView;
 
 
     @Override
@@ -81,7 +84,8 @@ public class ItemListActivity extends AppCompatActivity {
         });
         String minBudget = getIntent().getStringExtra("budget");
         emptyText = (TextView)findViewById(R.id.tvEmpty);
-        View recyclerView = findViewById(R.id.item_list);
+        emptyText.setVisibility(View.GONE);
+        recyclerView = findViewById(R.id.item_list);
         assert recyclerView != null;
 //        setupRecyclerView((RecyclerView) recyclerView);
 
@@ -170,8 +174,8 @@ public class ItemListActivity extends AppCompatActivity {
                     }
 //                    mapDataList.add(map);
 //                    Log.d("City Budget",myCity.getCityBudget());
-                    Log.d("budget City",myCity.getCityBudget());
-                    Log.d("vudget APp",minBudget);
+//                    Log.d("budget City",myCity.getCityBudget());
+//                    Log.d("vudget APp",minBudget);
                     if(Float.parseFloat(myCity.getCityBudget())< Float.parseFloat(minBudget)){
                         mCities.add(myCity);
                     }
@@ -179,6 +183,12 @@ public class ItemListActivity extends AppCompatActivity {
 //                    Log.d("mCities Size", String.valueOf(mCities.size()));
                 }
                 if (mCities.size() == 0){
+
+                    recyclerView.setVisibility(View.GONE);
+                    emptyText.setVisibility(View.VISIBLE);
+                }else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    emptyText.setVisibility(View.GONE);
 
                 }
                 mAdapter.notifyDataSetChanged();
