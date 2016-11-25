@@ -4,6 +4,16 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@color/colorStatusBar</item>
     </style>
+
+    <style name="AppTheme.ActionBar.Transparent" parent="AppTheme">
+        <item name="colorPrimary">@android:color/transparent</item>
+    </style>
+
+    <style name="AppTheme.ActionBar" parent="AppTheme">
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+    </style>
+
 </resources>
