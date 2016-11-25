@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,8 @@ public class BudgetActivity extends AppCompatActivity {
     private TextView mBack;
     private ValueAnimator mAnimator;
     private CircleButton mReady;
+    private String budget;
+    private Button btnCoba;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,7 @@ public class BudgetActivity extends AppCompatActivity {
         mBack.setOnClickListener(operation);
         mReady = (CircleButton)findViewById(R.id.btnReady);
         mReady.setOnClickListener(operation);
+
 
         mButton.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
@@ -53,25 +57,27 @@ public class BudgetActivity extends AppCompatActivity {
                 return true;
             }
         });
-        etBudget.setOnEditorActionListener(new EditText.OnEditorActionListener(){
 
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_ACTION_SEARCH ||
-                        i == EditorInfo.IME_ACTION_DONE ||
-                        keyEvent.getAction() == keyEvent.ACTION_DOWN && keyEvent.getKeyCode() == keyEvent.KEYCODE_ENTER){
+//        etBudget.setOnEditorActionListener(new EditText.OnEditorActionListener(){
+//
+//            @Override
+//            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+//                if (i == EditorInfo.IME_ACTION_SEARCH ||
+//                        i == EditorInfo.IME_ACTION_DONE ||
+//                        keyEvent.getAction() == keyEvent.ACTION_DOWN && keyEvent.getKeyCode() == keyEvent.KEYCODE_ENTER){
+//
+//                    expand();
+//                    InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+//                    inputMethodManager.hideSoftInputFromWindow(textView.getWindowToken(),0);
+//                    return true;
+////                    if (!keyEvent.isShiftPressed()){
+////                        return true;
+////                    }
+//                }
+//                return false;
+//            }
+//        });
 
-                    expand();
-                    InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
-                    inputMethodManager.hideSoftInputFromWindow(textView.getWindowToken(),0);
-                    return true;
-//                    if (!keyEvent.isShiftPressed()){
-//                        return true;
-//                    }
-                }
-                return false;
-            }
-        });
 
     }
     private void hideKeyboard(View view){
@@ -86,6 +92,8 @@ public class BudgetActivity extends AppCompatActivity {
                     collapse();
                     break;
                 case R.id.btnReady:
+                    budget = etBudget.getText().toString();
+                    Log.d("BUdget Activity",budget);
                     goingIntent(ItemListActivity.class);
                     break;
             }
@@ -93,11 +101,13 @@ public class BudgetActivity extends AppCompatActivity {
     };
     private void goingIntent(Class x){
         Intent intent = new Intent(this,x);
+        intent.putExtra("budget",etBudget.getText().toString());
         startActivity(intent);
         finish();
     }
     private void expand(){
         mButton.setVisibility(View.VISIBLE);
+        Log.d("Budget Activity",etBudget.getText().toString());
         mBudget.setVisibility(View.GONE);
 
         mAnimator.start();

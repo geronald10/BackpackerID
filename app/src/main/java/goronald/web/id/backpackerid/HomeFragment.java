@@ -113,6 +113,7 @@ public class HomeFragment extends Fragment {
 
     private void goingIntent(Class x){
         Intent intent = new Intent(getContext(),x);
+        intent.putExtra("budget",etBudget.getText().toString());
         startActivity(intent);
 //        finish();
     }

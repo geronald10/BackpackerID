@@ -59,6 +59,7 @@ public class ItemListActivity extends AppCompatActivity {
     private ArrayList<City> mCities;
     private ProgressDialog loading;
     private SimpleItemRecyclerViewAdapter mAdapter;
+    private TextView emptyText;
 
 
     @Override
@@ -78,7 +79,8 @@ public class ItemListActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-
+        String minBudget = getIntent().getStringExtra("budget");
+        emptyText = (TextView)findViewById(R.id.tvEmpty);
         View recyclerView = findViewById(R.id.item_list);
         assert recyclerView != null;
 //        setupRecyclerView((RecyclerView) recyclerView);
@@ -90,6 +92,8 @@ public class ItemListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
+
+
         loading = new ProgressDialog(this);
         loading.setIndeterminate(true);
         loading.setCancelable(false);
@@ -100,15 +104,17 @@ public class ItemListActivity extends AppCompatActivity {
 //        mCities = myDatabase.getDataKota(query, loading);
 
         mAdapter = new SimpleItemRecyclerViewAdapter(mCities);
-        updateAndShowDataList();
 
-        Log.d("Size After Update", String.valueOf(mCities.size()));
+
+        updateAndShowDataList(minBudget);
+
+//        Log.d("Size After Update", String.valueOf(mCities.size()));
 
 
         ((RecyclerView) recyclerView).setAdapter(mAdapter);
     }
 
-    private void updateAndShowDataList() {
+    private void updateAndShowDataList(final String minBudget) {
         MesosferQuery<MesosferData> query = MesosferData.getQuery("Kota");
 
         // showing a progress dialog loading
@@ -163,9 +169,17 @@ public class ItemListActivity extends AppCompatActivity {
                         map.put("data", data.toJSON().toString());
                     }
 //                    mapDataList.add(map);
-                    Log.d("City Budget",myCity.getCityBudget());
-                    mCities.add(myCity);
-                    Log.d("mCities Size", String.valueOf(mCities.size()));
+//                    Log.d("City Budget",myCity.getCityBudget());
+                    Log.d("budget City",myCity.getCityBudget());
+                    Log.d("vudget APp",minBudget);
+                    if(Float.parseFloat(myCity.getCityBudget())< Float.parseFloat(minBudget)){
+                        mCities.add(myCity);
+                    }
+
+//                    Log.d("mCities Size", String.valueOf(mCities.size()));
+                }
+                if (mCities.size() == 0){
+
                 }
                 mAdapter.notifyDataSetChanged();
             }
