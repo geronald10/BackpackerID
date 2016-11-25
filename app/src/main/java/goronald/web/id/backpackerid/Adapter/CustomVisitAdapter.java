@@ -3,6 +3,7 @@ package goronald.web.id.backpackerid.Adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +31,7 @@ public class CustomVisitAdapter extends RecyclerView.Adapter<CustomVisitAdapter.
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_content,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_visit_list_content,parent,false);
         return new ViewHolder(view);
     }
 
@@ -39,6 +40,7 @@ public class CustomVisitAdapter extends RecyclerView.Adapter<CustomVisitAdapter.
 //        holder.imageObject
 
         holder.nameObject.setText(mObjs.get(position).getObjName());
+        Log.d("adapter",mObjs.get(position).getObjName());
         holder.budgetObject.setText(mObjs.get(position).getObjPrice());
 
     }
