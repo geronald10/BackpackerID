@@ -3,8 +3,12 @@ package goronald.web.id.backpackerid;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -18,12 +22,18 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.eyro.mesosfer.FindCallback;
 import com.eyro.mesosfer.MesosferData;
 import com.eyro.mesosfer.MesosferException;
 import com.eyro.mesosfer.MesosferQuery;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -32,7 +42,6 @@ import org.json.JSONObject;
 import goronald.web.id.backpackerid.Database.DatabaseHelper;
 import goronald.web.id.backpackerid.Object.City;
 import goronald.web.id.backpackerid.Object.VisitObject;
-import goronald.web.id.backpackerid.dummy.DummyContent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +57,7 @@ import java.util.Map;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class ItemListActivity extends AppCompatActivity {
+public class ItemListActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -63,7 +72,17 @@ public class ItemListActivity extends AppCompatActivity {
     private TextView emptyText;
     private FrameLayout frameLayout;
     private View recyclerView;
+    private double currLat;
+    private double currLng;
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
 
+    private Location mLoc;
+
+    private GoogleApiClient googleApiClient;
+
+    private boolean mRequestingLocationUpdate = false;
+
+    private LocationRequest mLocationRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +101,16 @@ public class ItemListActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+
+        if (googleApiClient == null) {
+            buildGoogleApiClient();
+        }
+
+        displayLocation();
+
         String minBudget = getIntent().getStringExtra("budget");
-        emptyText = (TextView)findViewById(R.id.tvEmpty);
+        emptyText = (TextView) findViewById(R.id.tvEmpty);
         emptyText.setVisibility(View.GONE);
         recyclerView = findViewById(R.id.item_list);
         assert recyclerView != null;
@@ -118,7 +145,75 @@ public class ItemListActivity extends AppCompatActivity {
         ((RecyclerView) recyclerView).setAdapter(mAdapter);
     }
 
+    @Override
+    protected void onStart() {
+        googleApiClient.connect();
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+
+        googleApiClient.disconnect();
+        super.onStop();
+    }
+
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this, PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Toast.makeText(getApplicationContext(),
+                        "This device is not supported.", Toast.LENGTH_LONG)
+                        .show();
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private void displayLocation() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mLoc = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+
+        if (mLoc!= null){
+            currLat = mLoc.getLatitude();
+            currLng = mLoc.getLongitude();
+            Log.d("Current Latitude",String.valueOf(currLat));
+            Log.d("Current Longitude",String.valueOf(currLng));
+        }else {
+            Log.d("Error","not getting any data");
+        }
+    }
+
+    protected synchronized void buildGoogleApiClient(){
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+
+    }
+
+
     private void updateAndShowDataList(final String minBudget) {
+        final Location currentLoc = new Location("Now");
+        final Location cityLoc = new Location("City");
+        currentLoc.setLatitude(currLat);
+        currentLoc.setLongitude(currLng);
+        final Double distance;
+
         MesosferQuery<MesosferData> query = MesosferData.getQuery("Kota");
 
         // showing a progress dialog loading
@@ -167,6 +262,13 @@ public class ItemListActivity extends AppCompatActivity {
                         myCity.setCityLong(dataJson.getString("kotaLng"));
                         myCity.setCityPhoto(dataJson.getString("kotaFoto"));
 
+                        cityLoc.setLatitude(Double.parseDouble(myCity.getCityLat()));
+                        cityLoc.setLongitude(Double.parseDouble(myCity.getCityLong()));
+
+                        String budget = budgetCalculation(currentLoc,cityLoc,myCity.getCityBudget());
+                        myCity.setCityBudget(budget);
+
+
 //                        Log.d("Nama Kota",namaKota);
 
                     } catch (JSONException e1) {
@@ -198,6 +300,28 @@ public class ItemListActivity extends AppCompatActivity {
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
 //        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(""));
+    }
+
+    private String budgetCalculation(Location origin,Location destination, String budget){
+        Double distance = (double) origin.distanceTo(destination);
+        Double minBudget = Double.valueOf(budget)*distance;
+
+        return String.valueOf(minBudget);
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
     }
 
     public class SimpleItemRecyclerViewAdapter
