@@ -6,6 +6,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -114,6 +115,7 @@ public class ProfileActivity extends AppCompatActivity {
         if (user != null) {
             MesosferObject data = user.getData();
             if (data != null) {
+                Log.d("data", String.valueOf(data));
                 textNama.setText(user.getFirstName());
                 Date date = data.optDate("tanggalLahir");
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -178,7 +180,7 @@ public class ProfileActivity extends AppCompatActivity {
         if (user != null) {
             user.setFirstName(nama);
             // set custom field
-            user.setData("tanggalLahir", tgllahir);
+            user.setData("tanggalLahir", tanggallahir);
             user.setData("kotaAsal", kotaasal);
             // execute update user
             user.updateDataAsync(new SaveCallback() {

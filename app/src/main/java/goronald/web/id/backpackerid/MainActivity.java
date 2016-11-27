@@ -15,10 +15,14 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.eyro.mesosfer.GetCallback;
 import com.eyro.mesosfer.LogOutCallback;
 import com.eyro.mesosfer.MesosferException;
 import com.eyro.mesosfer.MesosferUser;
@@ -27,6 +31,8 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private TextView navUserNama;
+    private TextView navUserEmail;
     private ProgressDialog loading;
     private AlertDialog dialog;
 
@@ -35,12 +41,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initalizeScreen();
 
         loading = new ProgressDialog(this);
         loading.setIndeterminate(true);
         loading.setCancelable(false);
         loading.setCanceledOnTouchOutside(false);
+
+        initalizeScreen();
 
         Button btnLogOut = (Button)findViewById(R.id.btn_log_out);
         btnLogOut.setOnClickListener(new View.OnClickListener() {
@@ -52,6 +59,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initalizeScreen() {
+        // showing a progress dialog loading
+        loading.setMessage("Fetching user profile...");
+        loading.show();
+
         ViewPager viewPager = (ViewPager)findViewById(R.id.pager);
         TabLayout tabLayout = (TabLayout)findViewById(R.id.tab_layout);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
@@ -64,8 +75,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        // get CurrentUser
+        final MesosferUser user = MesosferUser.getCurrentUser();
+
         NavigationView navigationView = (NavigationView)findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        if (user != null) {
+            user.fetchAsync(new GetCallback<MesosferUser>() {
+            @Override
+            public void done(MesosferUser mesosferUser, MesosferException e) {
+                // hide progress dialog loading
+                loading.dismiss();
+
+                // check if there is an exception happen
+                if (e != null) {
+                    // setup alert dialog builder
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setNegativeButton(android.R.string.ok, null);
+                    builder.setTitle("Error Happen");
+                    builder.setMessage(
+                            String.format(Locale.getDefault(), "Error code: %d\nDescription: %s",
+                                    e.getCode(), e.getMessage())
+                    );
+                    dialog = builder.show();
+                    return;
+                }
+                Toast.makeText(MainActivity.this, "Profile Fetched", Toast.LENGTH_SHORT).show();
+                navUserNama = (TextView)findViewById(R.id.tvUserNama);
+                navUserEmail = (TextView)findViewById(R.id.tvUserEmail);
+                navUserNama.setText(mesosferUser.getFirstName());
+                Log.d("nama", mesosferUser.getFirstName());
+                navUserEmail.setText(mesosferUser.getEmail());
+                }
+            });
+        }
 
         // Create SectionPagerAdapter
         SectionPagerAdapter adapter = new SectionPagerAdapter(getSupportFragmentManager());
