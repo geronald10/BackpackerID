@@ -122,12 +122,14 @@
                 android:text="Or Sign In with"
                 android:textStyle="bold"
                 android:textColor="@color/colorPrimaryEditText"
-                android:id="@+id/textView" />
+                android:id="@+id/textView"
+                android:visibility="gone" />
 
             <com.google.android.gms.common.SignInButton
                 android:id="@+id/sign_in_google_button"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
 
         </LinearLayout>
     </ScrollView>

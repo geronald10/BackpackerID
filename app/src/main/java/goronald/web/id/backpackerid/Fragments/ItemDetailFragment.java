@@ -1,4 +1,4 @@
-package goronald.web.id.backpackerid;
+package goronald.web.id.backpackerid.Fragments;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -30,7 +30,10 @@ import java.util.List;
 import java.util.Map;
 
 import goronald.web.id.backpackerid.Adapter.CustomVisitAdapter;
+import goronald.web.id.backpackerid.ItemDetailActivity;
+import goronald.web.id.backpackerid.ItemListActivity;
 import goronald.web.id.backpackerid.Object.VisitObject;
+import goronald.web.id.backpackerid.R;
 
 /**
  * A fragment representing a single Item detail screen.
@@ -69,7 +72,6 @@ public class ItemDetailFragment extends Fragment {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-//            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
             mItem = getArguments().getString(ARG_ITEM_ID);
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
@@ -98,7 +100,7 @@ public class ItemDetailFragment extends Fragment {
         loading.setCancelable(false);
         loading.setCanceledOnTouchOutside(false);
         objAdapter = new CustomVisitAdapter(getContext(), mObject);
-        Log.d("nama kota visit",mItem);
+//        Log.d("nama kota visit",mItem);
         updateAndShowDataList(mItem);
 //        Log.d()
 
@@ -130,22 +132,10 @@ public class ItemDetailFragment extends Fragment {
 
                 // check if there is an exception happen
                 if (e != null) {
-                    // setup alert dialog builder
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(ItemListActivity.this);
-//                    builder.setNegativeButton(android.R.string.ok, null);
-//                    builder.setTitle("Error Happen");
-//                    builder.setMessage(
-//                            String.format(Locale.getDefault(), "Error code: %d\nDescription: %s",
-//                                    e.getCode(), e.getMessage())
-//                    );
-//                    dialog = builder.show();
                     return;
                 }
 
-                // clear all data list
-//                mapDataList.clear();
                 for (MesosferData data : list) {
-//                    City myCity = new City();
                     VisitObject myObject = new VisitObject();
 
                     Map<String, String> map = new HashMap<>();
@@ -153,8 +143,7 @@ public class ItemDetailFragment extends Fragment {
                     try {
                         map.put("data", data.toJSON().toString(1));
                         JSONObject dataJson = new JSONObject(data.toJSON().toString());
-//                        String namaKota = dataJson.getString("namaKota");
-                        Log.d("Object",dataJson.getString("namaKota"));
+//                        Log.d("Object",dataJson.getString("namaKota"));
                         myObject.setObjOrigin(dataJson.getString("namaKota"));
                         myObject.setObjName(dataJson.getString("worthName"));
                         myObject.setObjPrice(dataJson.getString("worthPrice"));
@@ -170,11 +159,11 @@ public class ItemDetailFragment extends Fragment {
 //                    mapDataList.add(map);
 //                    Log.d("City Budget",myCity.getCityBudget());
                     if (myObject.getObjOrigin().equals(key)){
-                        Log.d("masuk", "iya");
+//                        Log.d("masuk", "iya");
 
                         mObject.add(myObject);
                     }
-                    Log.d("mObject Size", String.valueOf(mObject.size()));
+//                    Log.d("mObject Size", String.valueOf(mObject.size()));
                 }
                 objAdapter.notifyDataSetChanged();
             }

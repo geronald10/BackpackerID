@@ -1,47 +1,65 @@
-package goronald.web.id.backpackerid;
+package goronald.web.id.backpackerid.Fragments;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import at.markushi.ui.CircleButton;
+import goronald.web.id.backpackerid.ItemListActivity;
+import goronald.web.id.backpackerid.R;
 
-public class BudgetActivity extends AppCompatActivity {
+import static android.content.Context.INPUT_METHOD_SERVICE;
+
+
+public class HomeFragment extends Fragment {
 
     private LinearLayout mBudget,mButton;
     private EditText etBudget;
     private TextView mBack;
     private ValueAnimator mAnimator;
     private CircleButton mReady;
-    private String budget;
-    private Button btnCoba;
+
+    public HomeFragment() {
+    }
+
+    public static HomeFragment newInstance() {
+        HomeFragment fragment = new HomeFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_budget);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
 
-        mBudget = (LinearLayout)findViewById(R.id.llBudget);
-        mButton = (LinearLayout)findViewById(R.id.llButton);
-        etBudget = (EditText)findViewById(R.id.etBudget);
-        mBack = (TextView)findViewById(R.id.tvGoBack);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.activity_budget, container, false);
+
+
+        mBudget = (LinearLayout)rootView.findViewById(R.id.llBudget);
+        mButton = (LinearLayout)rootView.findViewById(R.id.llButton);
+        etBudget = (EditText)rootView.findViewById(R.id.etBudget);
+        mBack = (TextView)rootView.findViewById(R.id.tvGoBack);
         mBack.setOnClickListener(operation);
-        mReady = (CircleButton)findViewById(R.id.btnReady);
+        mReady = (CircleButton)rootView.findViewById(R.id.btnReady);
         mReady.setOnClickListener(operation);
-
 
         mButton.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
@@ -57,31 +75,28 @@ public class BudgetActivity extends AppCompatActivity {
                 return true;
             }
         });
+        etBudget.setOnEditorActionListener(new EditText.OnEditorActionListener(){
 
-//        etBudget.setOnEditorActionListener(new EditText.OnEditorActionListener(){
-//
-//            @Override
-//            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-//                if (i == EditorInfo.IME_ACTION_SEARCH ||
-//                        i == EditorInfo.IME_ACTION_DONE ||
-//                        keyEvent.getAction() == keyEvent.ACTION_DOWN && keyEvent.getKeyCode() == keyEvent.KEYCODE_ENTER){
-//
-//                    expand();
-//                    InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
-//                    inputMethodManager.hideSoftInputFromWindow(textView.getWindowToken(),0);
-//                    return true;
-////                    if (!keyEvent.isShiftPressed()){
-////                        return true;
-////                    }
-//                }
-//                return false;
-//            }
-//        });
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_SEARCH ||
+                        i == EditorInfo.IME_ACTION_DONE ||
+                        keyEvent.getAction() == keyEvent.ACTION_DOWN && keyEvent.getKeyCode() == keyEvent.KEYCODE_ENTER){
 
+                    expand();
+                    InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(INPUT_METHOD_SERVICE);
+                    inputMethodManager.hideSoftInputFromWindow(textView.getWindowToken(),0);
+                    return true;
+//                    if (!keyEvent.isShiftPressed()){
+//                        return true;
+//                    }
+                }
+                return false;
+            }
+        });
+//        initializeScreen(rootView);
 
-    }
-    private void hideKeyboard(View view){
-
+        return rootView;
     }
 
     View.OnClickListener operation = new View.OnClickListener() {
@@ -92,22 +107,20 @@ public class BudgetActivity extends AppCompatActivity {
                     collapse();
                     break;
                 case R.id.btnReady:
-                    budget = etBudget.getText().toString();
-                    Log.d("BUdget Activity",budget);
                     goingIntent(ItemListActivity.class);
                     break;
             }
         }
     };
+
     private void goingIntent(Class x){
-        Intent intent = new Intent(this,x);
+        Intent intent = new Intent(getContext(),x);
         intent.putExtra("budget",etBudget.getText().toString());
         startActivity(intent);
-        finish();
+//        finish();
     }
     private void expand(){
         mButton.setVisibility(View.VISIBLE);
-        Log.d("Budget Activity",etBudget.getText().toString());
         mBudget.setVisibility(View.GONE);
 
         mAnimator.start();

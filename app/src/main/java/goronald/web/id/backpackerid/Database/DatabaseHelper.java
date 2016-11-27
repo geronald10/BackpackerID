@@ -51,15 +51,6 @@ public class DatabaseHelper {
 
                 // check if there is an exception happen
                 if (e != null) {
-//                    // setup alert dialog builder
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(DataActivity.this);
-//                    builder.setNegativeButton(android.R.string.ok, null);
-//                    builder.setTitle("Error Happen");
-//                    builder.setMessage(
-//                            String.format(Locale.getDefault(), "Error code: %d\nDescription: %s",
-//                                    e.getCode(), e.getMessage())
-//                    );
-//                    dialog = builder.show();
                     return;
                 }
 
@@ -116,15 +107,6 @@ public class DatabaseHelper {
 
                 // check if there is an exception happen
                 if (e != null) {
-//                    // setup alert dialog builder
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(DataActivity.this);
-//                    builder.setNegativeButton(android.R.string.ok, null);
-//                    builder.setTitle("Error Happen");
-//                    builder.setMessage(
-//                            String.format(Locale.getDefault(), "Error code: %d\nDescription: %s",
-//                                    e.getCode(), e.getMessage())
-//                    );
-//                    dialog = builder.show();
                     return;
                 }
 

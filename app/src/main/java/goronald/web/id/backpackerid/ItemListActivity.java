@@ -6,18 +6,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,36 +24,32 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 import com.eyro.mesosfer.FindCallback;
 import com.eyro.mesosfer.MesosferData;
 import com.eyro.mesosfer.MesosferException;
 import com.eyro.mesosfer.MesosferQuery;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.maps.model.LatLng;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import goronald.web.id.backpackerid.Database.DatabaseHelper;
-import goronald.web.id.backpackerid.Object.City;
-import goronald.web.id.backpackerid.Object.VisitObject;
-
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import goronald.web.id.backpackerid.Database.DatabaseHelper;
+import goronald.web.id.backpackerid.Fragments.ItemDetailFragment;
+import goronald.web.id.backpackerid.Object.City;
+import goronald.web.id.backpackerid.Object.VisitObject;
 
 /**
  * An activity representing a list of Items. This activity
@@ -104,7 +99,7 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
+        toolbar.setTitle("Tourism Spot");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -168,14 +163,8 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
 
         myDatabase = new DatabaseHelper();
         mCities = new ArrayList<City>();
-//        mCities = myDatabase.getDataKota(query, loading);
 
         mAdapter = new SimpleItemRecyclerViewAdapter(mCities);
-
-
-//        updateAndShowDataList(minBudget);
-
-//        Log.d("Size After Update", String.valueOf(mCities.size()));
 
 
         ((RecyclerView) recyclerView).setAdapter(mAdapter);
@@ -196,21 +185,6 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
         super.onStop();
     }
 
-    private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, this, PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            } else {
-                Toast.makeText(getApplicationContext(),
-                        "This device is not supported.", Toast.LENGTH_LONG)
-                        .show();
-                finish();
-            }
-            return false;
-        }
-        return true;
-    }
 
     private void displayLocation() {
 
@@ -219,8 +193,6 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
         if (mLoc!= null){
             currLat = mLoc.getLatitude();
             currLng = mLoc.getLongitude();
-//            Log.d("Current Latitude",String.valueOf(currLat));
-//            Log.d("Current Longitude",String.valueOf(currLng));
         }else {
             Log.d("Error","not getting any data");
         }
@@ -240,13 +212,7 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
                 .build();
 
     }
-    protected void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FATEST_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setSmallestDisplacement(DISPLACEMENT);
-    }
+
 
     private void updateAndShowDataList(final String minBudget) {
         final Location currentLoc = new Location("Now");
@@ -281,8 +247,6 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
                     return;
                 }
 
-                // clear all data list
-//                mapDataList.clear();
                 for (MesosferData data : list) {
                     City myCity = new City();
                     VisitObject myObject = new VisitObject();
@@ -293,7 +257,6 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
                         map.put("data", data.toJSON().toString(1));
                         JSONObject dataJson = new JSONObject(data.toJSON().toString());
                         String namaKota = dataJson.getString("namaKota");
-//                        Log.d("Nama Kota",dataJson.getString("namaKota"));
 
 
                         myCity.setCityName(dataJson.getString("namaKota"));
@@ -309,21 +272,13 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
                         String budget = budgetCalculation(currentLoc,cityLoc,myCity.getCityBudget());
                         myCity.setCityBudget(budget);
 
-
-//                        Log.d("Nama Kota",namaKota);
-
                     } catch (JSONException e1) {
                         map.put("data", data.toJSON().toString());
                     }
-//                    mapDataList.add(map);
-//                    Log.d("City Budget",myCity.getCityBudget());
-//                    Log.d("budget City",myCity.getCityBudget());
-//                    Log.d("vudget APp",minBudget);
                     if(Float.parseFloat(myCity.getCityBudget())< Float.parseFloat(minBudget)){
                         mCities.add(myCity);
                     }
 
-//                    Log.d("mCities Size", String.valueOf(mCities.size()));
                 }
                 if (mCities.size() == 0){
 
@@ -356,21 +311,16 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
     }
 
     private String budgetCalculation(Location origin,Location destination, String budget){
-//        Double distance = (double) origin.distanceTo(destination);
         Double distance2 = distance(origin.getLatitude(),origin.getLongitude(),destination.getLatitude(),destination.getLongitude());
         distance2 = Math.floor(distance2);
-//        Log.d("Current Latitude",String.valueOf(currLat));
-//        Log.d("Current Longitude",String.valueOf(currLng));
-
-//        Log.d("Distance",String.valueOf(distance));
-//        Log.d("Distance 2 ",String.valueOf(distance2));
 
         Double minBudget = Double.valueOf(budget)*distance2;
 
+        NumberFormat nf = new DecimalFormat("#.####");
 
-        Log.d("Budget",String.valueOf(minBudget));
+        String s1 = nf.format(minBudget);
 
-        return String.valueOf(minBudget);
+        return s1;
     }
 
     @Override
@@ -397,18 +347,10 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
     }
 
     private void handleNewLocation(Location location) {
-//        Log.d("Location", location.toString());
-
-
         double currentLatitude = location.getLatitude();
         double currentLongitude = location.getLongitude();
         currLat = currentLatitude;
         currLng = currentLongitude;
-
-//        Log.d("currentLat :",String.valueOf(currLat));
-//        Log.d("currentLng :",String.valueOf(currLng));
-
-        LatLng latLng = new LatLng(currentLatitude, currentLongitude);
     }
 
     public class SimpleItemRecyclerViewAdapter

@@ -43,8 +43,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DataActivity" />
-        <activity android:name=".BudgetActivity" />
         <activity
             android:name=".ItemListActivity"
             android:label="@string/title_item_list"
