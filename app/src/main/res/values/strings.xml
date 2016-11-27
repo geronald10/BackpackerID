@@ -26,7 +26,7 @@
     <string name="hint_sign_in">Sign in</string>
     <string name="label_btn_register_here"><![CDATA[>> Register here <<]]></string>
     <string name="label_btn_logout">Logout</string>
-    <string name="title_item_list">Items</string>
+    <string name="title_item_list">Tourism Spots</string>
     <string name="title_item_detail">Item Detail</string>
 
     <string name="pager_title_home">Home</string>

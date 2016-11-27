@@ -54,7 +54,8 @@
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:textColorHint="@color/colorPrimaryDark">
 
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/text_email"
@@ -70,7 +71,8 @@
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:textColorHint="@color/colorPrimaryDark">
 
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/text_password"
