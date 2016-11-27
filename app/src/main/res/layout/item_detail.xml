@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:textIsSelectable="true"
-    tools:context="goronald.web.id.backpackerid.ItemDetailFragment"
+    tools:context="goronald.web.id.backpackerid.Fragments.ItemDetailFragment"
     android:orientation="vertical" >
 
 

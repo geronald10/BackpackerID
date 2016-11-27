@@ -1,5 +1,6 @@
 package goronald.web.id.backpackerid;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -8,13 +9,14 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,15 +24,12 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 import com.eyro.mesosfer.FindCallback;
 import com.eyro.mesosfer.MesosferData;
 import com.eyro.mesosfer.MesosferException;
 import com.eyro.mesosfer.MesosferQuery;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -39,15 +38,18 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import goronald.web.id.backpackerid.Database.DatabaseHelper;
-import goronald.web.id.backpackerid.Object.City;
-import goronald.web.id.backpackerid.Object.VisitObject;
-
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import goronald.web.id.backpackerid.Database.DatabaseHelper;
+import goronald.web.id.backpackerid.Fragments.ItemDetailFragment;
+import goronald.web.id.backpackerid.Object.City;
+import goronald.web.id.backpackerid.Object.VisitObject;
 
 /**
  * An activity representing a list of Items. This activity
@@ -57,7 +59,8 @@ import java.util.Map;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class ItemListActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class ItemListActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -75,10 +78,15 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
     private double currLat;
     private double currLng;
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
+    private static final int PERMISSION_REQUEST_ACCESS_FINE_LOCATION = 940;
+    private static int UPDATE_INTERVAL = 10000; // 10 sec
+    private static int FATEST_INTERVAL = 5000; // 5 sec
+    private static int DISPLACEMENT = 10; // 10 meters
 
     private Location mLoc;
 
-    private GoogleApiClient googleApiClient;
+    private GoogleApiClient mGoogleClient;
+    String minBudget;
 
     private boolean mRequestingLocationUpdate = false;
 
@@ -91,7 +99,7 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
+        toolbar.setTitle("Tourism Spot");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -102,14 +110,37 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
             }
         });
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
 
-        if (googleApiClient == null) {
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+                // PERMISSION_REQUEST_ACCESS_FINE_LOCATION can be any unique int
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_ACCESS_FINE_LOCATION);
+            }
+        }
+
+        if (mGoogleClient == null) {
             buildGoogleApiClient();
         }
 
         displayLocation();
 
-        String minBudget = getIntent().getStringExtra("budget");
+        mLocationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(10 * 1000)        // 10 seconds, in milliseconds
+                .setFastestInterval(1 * 1000); // 1 second, in milliseconds
+
+
+        minBudget = getIntent().getStringExtra("budget");
         emptyText = (TextView) findViewById(R.id.tvEmpty);
         emptyText.setVisibility(View.GONE);
         recyclerView = findViewById(R.id.item_list);
@@ -132,14 +163,8 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
 
         myDatabase = new DatabaseHelper();
         mCities = new ArrayList<City>();
-//        mCities = myDatabase.getDataKota(query, loading);
 
         mAdapter = new SimpleItemRecyclerViewAdapter(mCities);
-
-
-        updateAndShowDataList(minBudget);
-
-//        Log.d("Size After Update", String.valueOf(mCities.size()));
 
 
         ((RecyclerView) recyclerView).setAdapter(mAdapter);
@@ -147,58 +172,40 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
 
     @Override
     protected void onStart() {
-        googleApiClient.connect();
         super.onStart();
+        if (mGoogleClient!= null){
+            mGoogleClient.connect();
+        }
     }
 
     @Override
     protected void onStop() {
 
-        googleApiClient.disconnect();
+        mGoogleClient.disconnect();
         super.onStop();
     }
 
-    private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, this, PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            } else {
-                Toast.makeText(getApplicationContext(),
-                        "This device is not supported.", Toast.LENGTH_LONG)
-                        .show();
-                finish();
-            }
-            return false;
-        }
-        return true;
-    }
 
     private void displayLocation() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mLoc = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+
+        mLoc = LocationServices.FusedLocationApi.getLastLocation(mGoogleClient);
 
         if (mLoc!= null){
             currLat = mLoc.getLatitude();
             currLng = mLoc.getLongitude();
-            Log.d("Current Latitude",String.valueOf(currLat));
-            Log.d("Current Longitude",String.valueOf(currLng));
         }else {
             Log.d("Error","not getting any data");
         }
     }
+    protected void startLocationUpdates() {
+
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleClient, mLocationRequest, this);
+
+    }
 
     protected synchronized void buildGoogleApiClient(){
-        googleApiClient = new GoogleApiClient.Builder(this)
+        mGoogleClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
@@ -240,8 +247,6 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
                     return;
                 }
 
-                // clear all data list
-//                mapDataList.clear();
                 for (MesosferData data : list) {
                     City myCity = new City();
                     VisitObject myObject = new VisitObject();
@@ -252,7 +257,6 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
                         map.put("data", data.toJSON().toString(1));
                         JSONObject dataJson = new JSONObject(data.toJSON().toString());
                         String namaKota = dataJson.getString("namaKota");
-                        Log.d("Nama Kota",dataJson.getString("namaKota"));
 
 
                         myCity.setCityName(dataJson.getString("namaKota"));
@@ -268,21 +272,13 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
                         String budget = budgetCalculation(currentLoc,cityLoc,myCity.getCityBudget());
                         myCity.setCityBudget(budget);
 
-
-//                        Log.d("Nama Kota",namaKota);
-
                     } catch (JSONException e1) {
                         map.put("data", data.toJSON().toString());
                     }
-//                    mapDataList.add(map);
-//                    Log.d("City Budget",myCity.getCityBudget());
-//                    Log.d("budget City",myCity.getCityBudget());
-//                    Log.d("vudget APp",minBudget);
                     if(Float.parseFloat(myCity.getCityBudget())< Float.parseFloat(minBudget)){
                         mCities.add(myCity);
                     }
 
-//                    Log.d("mCities Size", String.valueOf(mCities.size()));
                 }
                 if (mCities.size() == 0){
 
@@ -298,15 +294,33 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
         });
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-//        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(""));
+    private double distance(double lat1, double lon1, double lat2, double lon2) {
+        double theta = lon1 - lon2;
+        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        return (dist);
+    }
+
+    private double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+    private double rad2deg(double rad) {
+        return (rad * 180.0 / Math.PI);
     }
 
     private String budgetCalculation(Location origin,Location destination, String budget){
-        Double distance = (double) origin.distanceTo(destination);
-        Double minBudget = Double.valueOf(budget)*distance;
+        Double distance2 = distance(origin.getLatitude(),origin.getLongitude(),destination.getLatitude(),destination.getLongitude());
+        distance2 = Math.floor(distance2);
 
-        return String.valueOf(minBudget);
+        Double minBudget = Double.valueOf(budget)*distance2;
+
+        NumberFormat nf = new DecimalFormat("#.####");
+
+        String s1 = nf.format(minBudget);
+
+        return s1;
     }
 
     @Override
@@ -316,12 +330,27 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        displayLocation();
+        startLocationUpdates();
+        updateAndShowDataList(minBudget);
 
     }
 
     @Override
     public void onConnectionSuspended(int i) {
 
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        handleNewLocation(location);
+    }
+
+    private void handleNewLocation(Location location) {
+        double currentLatitude = location.getLatitude();
+        double currentLongitude = location.getLongitude();
+        currLat = currentLatitude;
+        currLng = currentLongitude;
     }
 
     public class SimpleItemRecyclerViewAdapter

@@ -29,6 +29,8 @@ import com.eyro.mesosfer.MesosferUser;
 
 import java.util.Locale;
 
+import goronald.web.id.backpackerid.Fragments.HomeFragment;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private TextView navUserNama;
@@ -112,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Create SectionPagerAdapter
         SectionPagerAdapter adapter = new SectionPagerAdapter(getSupportFragmentManager());
-        viewPager.setOffscreenPageLimit(2);
+        viewPager.setOffscreenPageLimit(1);
         viewPager.setAdapter(adapter);
 
         tabLayout.setupWithViewPager(viewPager);
@@ -200,9 +202,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case 0:
                     fragment = HomeFragment.newInstance();
                     break;
-                case 1:
-                    fragment = PlacesFragment.newInstance();
-                    break;
                 default:
                     fragment = HomeFragment.newInstance();
                     break;
@@ -212,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         public int getCount() {
-            return 2;
+            return 1;
         }
 
         @Override
