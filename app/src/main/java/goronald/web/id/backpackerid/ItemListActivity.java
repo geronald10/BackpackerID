@@ -25,6 +25,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.eyro.mesosfer.FindCallback;
 import com.eyro.mesosfer.MesosferData;
 import com.eyro.mesosfer.MesosferException;
@@ -33,7 +35,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.squareup.picasso.Picasso;
+//import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -173,7 +175,7 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
     @Override
     protected void onStart() {
         super.onStart();
-        if (mGoogleClient!= null){
+        if (mGoogleClient != null) {
             mGoogleClient.connect();
         }
     }
@@ -190,15 +192,26 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
 
         mLoc = LocationServices.FusedLocationApi.getLastLocation(mGoogleClient);
 
-        if (mLoc!= null){
+        if (mLoc != null) {
             currLat = mLoc.getLatitude();
             currLng = mLoc.getLongitude();
-        }else {
-            Log.d("Error","not getting any data");
+        } else {
+            Log.d("Error", "not getting any data");
         }
     }
+
     protected void startLocationUpdates() {
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleClient, mLocationRequest, this);
 
@@ -374,10 +387,21 @@ public class ItemListActivity extends AppCompatActivity implements GoogleApiClie
             holder.mItem = mValues.get(position);
 //            holder.mIdView.setText(mValues.get(position).id);
             holder.mContentTextNamaKota.setText(mValues.get(position).getCityName());
-            Picasso.with(getApplicationContext())
-                    .load(mValues.get(position).getCityPhoto())
-                    .resize(125,90)
+            Log.d("Photo url",mValues.get(position).getCityPhoto());
+//            Picasso.with(getApplicationContext())
+//                    .load(mValues.get(position).getCityPhoto())
+//                    .resize(125, 90)
+//                    .centerCrop()
+//                    .placeholder(R.drawable.ic_camera)
+//                    .error(R.drawable.ic_error)
+//                    .into(holder.mContentImageKota);
+            Glide.with(getApplicationContext()).load(mValues.get(position).getCityPhoto())
+                    .thumbnail(0.5f)
                     .centerCrop()
+                    .placeholder(R.drawable.ic_camera)
+                    .error(R.drawable.ic_error)
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.mContentImageKota);
             holder.mContentTextBudget.setText("Budget: Rp. " + (mValues.get(position).getCityBudget()));
 //            Log.d("Ini item",mValues.get(position).getCityName());

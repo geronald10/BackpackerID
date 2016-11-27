@@ -151,7 +151,7 @@ public class ItemDetailFragment extends Fragment {
                         myObject.setObjLat(dataJson.getString("worthLat"));
                         myObject.setObjLong(dataJson.getString("worthLng"));
 
-//                        Log.d("Nama Kota",namaKota);
+//                        Log.d("Url Object",myObject.getObjPhoto());
 
                     } catch (JSONException e1) {
                         map.put("data", data.toJSON().toString());

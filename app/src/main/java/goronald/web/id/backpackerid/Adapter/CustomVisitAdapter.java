@@ -9,7 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+//import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -23,10 +25,10 @@ import goronald.web.id.backpackerid.R;
 public class CustomVisitAdapter extends RecyclerView.Adapter<CustomVisitAdapter.ViewHolder> {
 
     private final List<VisitObject> mObjs;
-    private Context mContext;
+    private Context mCtxt;
 
     public CustomVisitAdapter(Context mContext, List<VisitObject> mObjects){
-        mContext = mContext;
+        mCtxt = mContext;
         mObjs = mObjects;
     }
 
@@ -42,10 +44,19 @@ public class CustomVisitAdapter extends RecyclerView.Adapter<CustomVisitAdapter.
 
         holder.nameObject.setText(mObjs.get(position).getObjName());
         Log.d("adapter",mObjs.get(position).getObjName());
-        Picasso.with(mContext)
+//        Picasso.with(mContext)
+//                .load(mObjs.get(position).getObjPhoto())
+//                .resize(125,90)
+//                .centerCrop()
+//                .into(holder.imageObject);
+        Glide.with(mCtxt)
                 .load(mObjs.get(position).getObjPhoto())
-                .resize(125,90)
                 .centerCrop()
+                .placeholder(R.drawable.ic_camera)
+                .error(R.drawable.ic_error)
+                .thumbnail(0.5f)
+                .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(holder.imageObject);
         holder.budgetObject.setText(mObjs.get(position).getObjPrice());
 
