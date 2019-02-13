@@ -6,19 +6,6 @@ BackpakerID will show list tourism destination city with detail of any tourism o
 
 BackpackerID created by a team consist of 2 people. 
 
-
-
-
 Creator :
-Nama Lengkap    : Ronald Gunawan Radityatama
-Alamat Lengkap  : Jalan Suterejo Utara I / 9 Surabaya
-Nomor Telpon    : 085641472244
-
-Nama Lengkap    : Andre Zachary Reinaldi
-Alamat Lengkap  : Jalan Suterejo Utara I / 9 Surabaya
-Nomor Telpon    : 081232610891
-
-
-
-
-
+Nama Lengkap    : Ronald Gunawan
+Nama Lengkap    : Andre Zachary
